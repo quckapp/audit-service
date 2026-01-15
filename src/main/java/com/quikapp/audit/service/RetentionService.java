@@ -1,12 +1,12 @@
-package com.quikapp.audit.service;
+package com.quckapp.audit.service;
 
-import com.quikapp.audit.domain.entity.AuditLog;
-import com.quikapp.audit.domain.entity.RetentionPolicy;
-import com.quikapp.audit.domain.repository.AuditLogRepository;
-import com.quikapp.audit.domain.repository.RetentionPolicyRepository;
-import com.quikapp.audit.dto.AuditDtos.*;
-import com.quikapp.audit.exception.DuplicateResourceException;
-import com.quikapp.audit.exception.ResourceNotFoundException;
+import com.quckapp.audit.domain.entity.AuditLog;
+import com.quckapp.audit.domain.entity.RetentionPolicy;
+import com.quckapp.audit.domain.repository.AuditLogRepository;
+import com.quckapp.audit.domain.repository.RetentionPolicyRepository;
+import com.quckapp.audit.dto.AuditDtos.*;
+import com.quckapp.audit.exception.DuplicateResourceException;
+import com.quckapp.audit.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

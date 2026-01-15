@@ -1,6 +1,6 @@
-package com.quikapp.audit.domain.document;
+package com.quckapp.audit.domain.document;
 
-import com.quikapp.audit.domain.entity.AuditLog;
+import com.quckapp.audit.domain.entity.AuditLog;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;

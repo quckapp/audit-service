@@ -1,8 +1,8 @@
-package com.quikapp.audit.kafka;
+package com.quckapp.audit.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.quikapp.audit.dto.AuditDtos.CreateAuditLogRequest;
-import com.quikapp.audit.service.AuditLogService;
+import com.quckapp.audit.dto.AuditDtos.CreateAuditLogRequest;
+import com.quckapp.audit.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

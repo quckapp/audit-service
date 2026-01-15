@@ -5,14 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: quikapp-audit-service
+    container_name: quckapp-audit-service
     ports:
       - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
-      - MYSQL_DATABASE=quikapp_audit
+      - MYSQL_DATABASE=quckapp_audit
       - MYSQL_USERNAME=root
       - MYSQL_PASSWORD=password
       - ELASTICSEARCH_URI=elasticsearch:9200
@@ -25,17 +25,17 @@ services:
       kafka:
         condition: service_started
     networks:
-      - quikapp-network
+      - quckapp-network
     restart: unless-stopped
 
   mysql:
     image: mysql:8.0
-    container_name: quikapp-audit-mysql
+    container_name: quckapp-audit-mysql
     ports:
       - "3309:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=quikapp_audit
+      - MYSQL_DATABASE=quckapp_audit
     volumes:
       - audit-mysql-data:/var/lib/mysql
     healthcheck:
@@ -44,11 +44,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - quikapp-network
+      - quckapp-network
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-    container_name: quikapp-audit-elasticsearch
+    container_name: quckapp-audit-elasticsearch
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -63,19 +63,19 @@ services:
       timeout: 10s
       retries: 5
     networks:
-      - quikapp-network
+      - quckapp-network
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
-    container_name: quikapp-audit-zookeeper
+    container_name: quckapp-audit-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     networks:
-      - quikapp-network
+      - quckapp-network
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
-    container_name: quikapp-audit-kafka
+    container_name: quckapp-audit-kafka
     ports:
       - "9094:9092"
     environment:
@@ -87,12 +87,12 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - quikapp-network
+      - quckapp-network
 
 volumes:
   audit-mysql-data:
   audit-elasticsearch-data:
 
 networks:
-  quikapp-network:
+  quckapp-network:
     driver: bridge

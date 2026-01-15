@@ -1,7 +1,7 @@
-package com.quikapp.audit.domain.repository;
+package com.quckapp.audit.domain.repository;
 
-import com.quikapp.audit.domain.entity.AuditLog;
-import com.quikapp.audit.domain.entity.RetentionPolicy;
+import com.quckapp.audit.domain.entity.AuditLog;
+import com.quckapp.audit.domain.entity.RetentionPolicy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

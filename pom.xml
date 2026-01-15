@@ -11,11 +11,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.quikapp</groupId>
+    <groupId>com.quckapp</groupId>
     <artifactId>audit-service</artifactId>
     <version>1.0.0</version>
     <name>audit-service</name>
-    <description>QuikApp Audit and Compliance Service</description>
+    <description>QuckApp Audit and Compliance Service</description>
 
     <properties>
         <java.version>21</java.version>

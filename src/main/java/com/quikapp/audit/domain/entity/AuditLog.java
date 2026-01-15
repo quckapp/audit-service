@@ -1,4 +1,4 @@
-package com.quikapp.audit.domain.entity;
+package com.quckapp.audit.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

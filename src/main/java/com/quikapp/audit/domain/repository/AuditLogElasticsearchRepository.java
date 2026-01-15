@@ -1,6 +1,6 @@
-package com.quikapp.audit.domain.repository;
+package com.quckapp.audit.domain.repository;
 
-import com.quikapp.audit.domain.document.AuditLogDocument;
+import com.quckapp.audit.domain.document.AuditLogDocument;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;

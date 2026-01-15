@@ -1,4 +1,4 @@
-package com.quikapp.audit;
+package com.quckapp.audit;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,7 +1,7 @@
-package com.quikapp.audit.dto;
+package com.quckapp.audit.dto;
 
-import com.quikapp.audit.domain.entity.AuditLog;
-import com.quikapp.audit.domain.entity.ComplianceReport;
+import com.quckapp.audit.domain.entity.AuditLog;
+import com.quckapp.audit.domain.entity.ComplianceReport;
 import jakarta.validation.constraints.*;
 import lombok.*;
 

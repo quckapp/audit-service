@@ -1,12 +1,12 @@
-package com.quikapp.audit.service;
+package com.quckapp.audit.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.quikapp.audit.domain.document.AuditLogDocument;
-import com.quikapp.audit.domain.entity.AuditLog;
-import com.quikapp.audit.domain.repository.AuditLogElasticsearchRepository;
-import com.quikapp.audit.domain.repository.AuditLogRepository;
-import com.quikapp.audit.dto.AuditDtos.*;
+import com.quckapp.audit.domain.document.AuditLogDocument;
+import com.quckapp.audit.domain.entity.AuditLog;
+import com.quckapp.audit.domain.repository.AuditLogElasticsearchRepository;
+import com.quckapp.audit.domain.repository.AuditLogRepository;
+import com.quckapp.audit.dto.AuditDtos.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

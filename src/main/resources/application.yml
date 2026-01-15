@@ -6,7 +6,7 @@ spring:
     name: audit-service
 
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:quikapp_audit}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:quckapp_audit}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -57,7 +57,7 @@ kafka:
 logging:
   level:
     root: INFO
-    com.quikapp.audit: DEBUG
+    com.quckapp.audit: DEBUG
     org.hibernate.SQL: DEBUG
     org.springframework.data.elasticsearch: DEBUG
   pattern:
@@ -90,7 +90,7 @@ spring:
       on-profile: docker
 
   datasource:
-    url: jdbc:mysql://mysql:3306/quikapp_audit?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://mysql:3306/quckapp_audit?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 
   elasticsearch:
     uris: elasticsearch:9200

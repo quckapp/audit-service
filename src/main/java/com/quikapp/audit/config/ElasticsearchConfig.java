@@ -1,4 +1,4 @@
-package com.quikapp.audit.config;
+package com.quckapp.audit.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "com.quikapp.audit.domain.repository")
+@EnableElasticsearchRepositories(basePackages = "com.quckapp.audit.domain.repository")
 public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
     @Value("${spring.elasticsearch.uris:localhost:9200}")

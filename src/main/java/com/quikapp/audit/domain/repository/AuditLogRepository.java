@@ -1,6 +1,6 @@
-package com.quikapp.audit.domain.repository;
+package com.quckapp.audit.domain.repository;
 
-import com.quikapp.audit.domain.entity.AuditLog;
+import com.quckapp.audit.domain.entity.AuditLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

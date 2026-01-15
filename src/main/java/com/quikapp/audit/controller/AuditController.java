@@ -1,9 +1,9 @@
-package com.quikapp.audit.controller;
+package com.quckapp.audit.controller;
 
-import com.quikapp.audit.dto.AuditDtos.*;
-import com.quikapp.audit.service.AuditLogService;
-import com.quikapp.audit.service.ComplianceReportService;
-import com.quikapp.audit.service.RetentionService;
+import com.quckapp.audit.dto.AuditDtos.*;
+import com.quckapp.audit.service.AuditLogService;
+import com.quckapp.audit.service.ComplianceReportService;
+import com.quckapp.audit.service.RetentionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

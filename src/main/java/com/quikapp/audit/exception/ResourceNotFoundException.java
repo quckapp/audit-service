@@ -1,4 +1,4 @@
-package com.quikapp.audit.exception;
+package com.quckapp.audit.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

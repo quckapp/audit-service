@@ -1,4 +1,4 @@
-package com.quikapp.audit.exception;
+package com.quckapp.audit.exception;
 
 public class DuplicateResourceException extends RuntimeException {
     public DuplicateResourceException(String message) {

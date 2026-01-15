@@ -1,6 +1,6 @@
-package com.quikapp.audit.exception;
+package com.quckapp.audit.exception;
 
-import com.quikapp.audit.dto.AuditDtos.ApiResponse;
+import com.quckapp.audit.dto.AuditDtos.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
