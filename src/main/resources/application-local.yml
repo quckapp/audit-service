@@ -1,0 +1,43 @@
+# =============================================================================
+# LOCAL (Mock) Environment Configuration
+# =============================================================================
+# Use this profile for local development with Docker containers
+# Run with: -Dspring.profiles.active=local
+# =============================================================================
+
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3310/quckapp_audit?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: root_secret
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+  elasticsearch:
+    uris: localhost:9200
+    username:
+    password:
+
+  kafka:
+    bootstrap-servers: localhost:29095
+
+  flyway:
+    enabled: true
+    validate-on-migrate: false
+    baseline-on-migrate: true
+
+# JWT Configuration - Same secret as auth-service
+jwt:
+  secret: bG9jYWwtZGV2LXNlY3JldC1rZXktZm9yLXRlc3Rpbmctb25seS0zMi1jaGFycw==
+  issuer: quckapp-auth-local
+
+logging:
+  level:
+    com.quckapp.audit: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.springframework.data.elasticsearch: DEBUG
