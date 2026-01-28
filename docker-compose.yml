@@ -10,31 +10,39 @@ services:
       - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - MYSQL_HOST=mysql
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=quckapp_audit
-      - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=password
+      - SERVER_PORT=8084
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=quckapp_audit
+      - DB_USERNAME=root
+      - DB_PASSWORD=root_secret
       - ELASTICSEARCH_URI=elasticsearch:9200
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_BROKERS=kafka:9092
+      - JWT_SECRET=${JWT_SECRET:-ZG9ja2VyLWRldi1zZWNyZXQta2V5LWZvci10ZXN0aW5nLW9ubHktMzItY2hhcnM=}
     depends_on:
       mysql:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
       kafka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - quckapp-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
   mysql:
     image: mysql:8.0
     container_name: quckapp-audit-mysql
     ports:
-      - "3309:3306"
+      - "3310:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=root_secret
       - MYSQL_DATABASE=quckapp_audit
     volumes:
       - audit-mysql-data:/var/lib/mysql
@@ -70,24 +78,38 @@ services:
     container_name: quckapp-audit-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     networks:
       - quckapp-network
+    healthcheck:
+      test: echo srvr | nc localhost 2181 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: quckapp-audit-kafka
     ports:
-      - "9094:9092"
+      - "9095:9092"
+      - "29095:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29095
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     networks:
       - quckapp-network
+    healthcheck:
+      test: kafka-topics --bootstrap-server localhost:9092 --list || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   audit-mysql-data:
