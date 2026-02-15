@@ -1,0 +1,105 @@
+# =============================================================================
+# LOCAL (Mock) Environment - Docker Compose
+# =============================================================================
+# Ports: MySQL 3310, Elasticsearch 9200, Kafka 29095, Zookeeper 2184
+# Usage: docker-compose -f docker/docker-compose-local.yml up -d
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # MySQL Database
+  audit-mysql-local:
+    image: mysql:8.0
+    container_name: audit-mysql-local
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secret
+      MYSQL_DATABASE: quckapp_audit
+    volumes:
+      - audit_mysql_local_data:/var/lib/mysql
+    networks:
+      - audit-local-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # Elasticsearch
+  audit-elasticsearch-local:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: audit-elasticsearch-local
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - audit_elasticsearch_local_data:/usr/share/elasticsearch/data
+    networks:
+      - audit-local-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'yellow\\|green'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Zookeeper
+  audit-zookeeper-local:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: audit-zookeeper-local
+    ports:
+      - "2184:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - audit_zookeeper_local_data:/var/lib/zookeeper/data
+    networks:
+      - audit-local-network
+    healthcheck:
+      test: echo srvr | nc localhost 2181 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka
+  audit-kafka-local:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: audit-kafka-local
+    ports:
+      - "9095:9092"
+      - "29095:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: audit-zookeeper-local:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://audit-kafka-local:9092,PLAINTEXT_HOST://localhost:29095
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - audit_kafka_local_data:/var/lib/kafka/data
+    depends_on:
+      audit-zookeeper-local:
+        condition: service_healthy
+    networks:
+      - audit-local-network
+    healthcheck:
+      test: kafka-topics --bootstrap-server localhost:9092 --list || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  audit_mysql_local_data:
+  audit_elasticsearch_local_data:
+  audit_zookeeper_local_data:
+  audit_kafka_local_data:
+
+networks:
+  audit-local-network:
+    driver: bridge
