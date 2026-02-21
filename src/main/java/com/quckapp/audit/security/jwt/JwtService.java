@@ -104,8 +104,8 @@ public class JwtService {
 
             // Verify issuer matches expected
             String issuer = claims.getIssuer();
-            if (!expectedIssuer.equals(issuer)) {
-                log.warn("JWT issuer mismatch. Expected: {}, Got: {}", expectedIssuer, issuer);
+            if (issuer == null || !issuer.startsWith("quckapp-auth")) {
+                log.warn("JWT issuer invalid. Expected prefix: quckapp-auth, Got: {}", issuer);
                 return false;
             }
 
@@ -132,7 +132,13 @@ public class JwtService {
      * Get signing key
      */
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        byte[] keyBytes;
+        try {
+            keyBytes = Decoders.BASE64.decode(jwtSecret);
+        } catch (Exception e) {
+            // Fallback: use raw bytes if secret is not valid Base64 (matches auth-service behavior)
+            keyBytes = jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        }
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

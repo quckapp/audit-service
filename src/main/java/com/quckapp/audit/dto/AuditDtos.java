@@ -1,5 +1,8 @@
 package com.quckapp.audit.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.quckapp.audit.domain.entity.AuditLog;
 import com.quckapp.audit.domain.entity.ComplianceReport;
 import jakarta.validation.constraints.*;
@@ -36,6 +39,7 @@ public class AuditDtos {
     }
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class AuditLogResponse {
         private UUID id;
         private UUID workspaceId;
@@ -193,7 +197,9 @@ public class AuditDtos {
     }
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class PagedResponse<T> {
+        @JsonProperty("items")
         private List<T> content;
         private int page;
         private int size;

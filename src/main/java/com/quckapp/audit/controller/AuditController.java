@@ -36,6 +36,18 @@ public class AuditController {
             .body(ApiResponse.success("Audit log created", auditLogService.createAuditLog(request)));
     }
 
+    @GetMapping("/logs")
+    @Operation(summary = "List audit logs with pagination")
+    public ResponseEntity<ApiResponse<PagedResponse<AuditLogResponse>>> listAuditLogs(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(name = "per_page", defaultValue = "20") int perPage) {
+        AuditLogSearchRequest request = AuditLogSearchRequest.builder()
+            .page(page > 0 ? page - 1 : 0)
+            .size(perPage)
+            .build();
+        return ResponseEntity.ok(ApiResponse.success(auditLogService.searchAuditLogs(request)));
+    }
+
     @PostMapping("/logs/search")
     @Operation(summary = "Search audit logs")
     public ResponseEntity<ApiResponse<PagedResponse<AuditLogResponse>>> searchAuditLogs(
