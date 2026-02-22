@@ -1,14 +1,14 @@
 server:
-  port: 8084
+  port: ${PORT:8084}
 
 spring:
   application:
     name: audit-service
 
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:quckapp_audit}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:password}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3310}/${DB_NAME:quckapp_audit}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root_secret}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 20
@@ -42,7 +42,7 @@ spring:
     password: ${ELASTICSEARCH_PASSWORD:}
 
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:29095}
     consumer:
       group-id: audit-service
       auto-offset-reset: earliest
@@ -79,9 +79,23 @@ management:
 springdoc:
   api-docs:
     path: /api-docs
+    enabled: true
   swagger-ui:
     path: /swagger-ui.html
+    enabled: true
     operationsSorter: method
+    tagsSorter: alpha
+    displayRequestDuration: true
+    persistAuthorization: true
+    tryItOutEnabled: true
+  packages-to-scan: com.quckapp.audit.controller
+  paths-to-match: /api/**
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
+audit:
+  reports:
+    export-path: ./exports
 
 ---
 spring:
@@ -90,13 +104,13 @@ spring:
       on-profile: docker
 
   datasource:
-    url: jdbc:mysql://mysql:3306/quckapp_audit?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/${DB_NAME:quckapp_audit}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 
   elasticsearch:
-    uris: elasticsearch:9200
+    uris: ${ELASTICSEARCH_URI:elasticsearch:9200}
 
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: ${KAFKA_BROKERS:kafka:9092}
 
 ---
 spring:

@@ -2,11 +2,14 @@ package com.quckapp.audit.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quckapp.audit.domain.entity.AuditLog;
 import com.quckapp.audit.domain.entity.ComplianceReport;
 import com.quckapp.audit.domain.repository.AuditLogRepository;
 import com.quckapp.audit.domain.repository.ComplianceReportRepository;
 import com.quckapp.audit.dto.AuditDtos.*;
 import com.quckapp.audit.exception.ResourceNotFoundException;
+import com.quckapp.audit.service.report.ReportGenerator;
+import com.quckapp.audit.service.report.ReportGeneratorFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,6 +32,8 @@ public class ComplianceReportService {
     private final ComplianceReportRepository reportRepository;
     private final AuditLogRepository auditLogRepository;
     private final ObjectMapper objectMapper;
+    private final ReportGeneratorFactory reportGeneratorFactory;
+    private final CsvExportService csvExportService;
 
     public ComplianceReportResponse requestReport(CreateReportRequest request, UUID requestedBy) {
         ComplianceReport report = ComplianceReport.builder()
@@ -63,12 +68,21 @@ public class ComplianceReportService {
             // Generate report based on type
             Map<String, Object> summary = generateReportData(report);
 
+            // Get report data for CSV export
+            List<AuditLog> reportData = getReportDataInternal(report);
+
+            // Export to CSV
+            CsvExportService.ExportResult exportResult = csvExportService.exportToCsv(
+                reportData, report.getName(), report.getId());
+
             report.setSummary(toJson(summary));
+            report.setFileUrl(exportResult.fileUrl());
+            report.setFileSize(exportResult.fileSize());
             report.setStatus(ComplianceReport.ReportStatus.COMPLETED);
             report.setCompletedAt(Instant.now());
             reportRepository.save(report);
 
-            log.info("Completed compliance report: {}", reportId);
+            log.info("Completed compliance report: {} with {} records exported", reportId, reportData.size());
         } catch (Exception e) {
             log.error("Failed to generate compliance report: {}", reportId, e);
             reportRepository.findById(reportId).ifPresent(report -> {
@@ -79,27 +93,40 @@ public class ComplianceReportService {
         }
     }
 
+    private List<AuditLog> getReportDataInternal(ComplianceReport report) {
+        ReportGenerator generator = reportGeneratorFactory.getGenerator(report.getReportType());
+        ReportGenerator.ReportContext context = new ReportGenerator.ReportContext(
+            report.getWorkspaceId(),
+            report.getPeriodStart(),
+            report.getPeriodEnd(),
+            fromJson(report.getParameters(), Map.class)
+        );
+        return generator.generateData(context);
+    }
+
     private Map<String, Object> generateReportData(ComplianceReport report) {
-        Map<String, Object> summary = new HashMap<>();
+        ReportGenerator generator = reportGeneratorFactory.getGenerator(report.getReportType());
+        ReportGenerator.ReportContext context = new ReportGenerator.ReportContext(
+            report.getWorkspaceId(),
+            report.getPeriodStart(),
+            report.getPeriodEnd(),
+            fromJson(report.getParameters(), Map.class)
+        );
+        return generator.generateSummary(context);
+    }
 
-        long totalEvents = auditLogRepository.countByWorkspaceIdAndDateRange(
-            report.getWorkspaceId(), report.getPeriodStart(), report.getPeriodEnd());
+    public List<AuditLog> getReportData(UUID reportId) {
+        ComplianceReport report = reportRepository.findById(reportId)
+            .orElseThrow(() -> new ResourceNotFoundException("Report not found"));
 
-        summary.put("totalEvents", totalEvents);
-        summary.put("periodStart", report.getPeriodStart().toString());
-        summary.put("periodEnd", report.getPeriodEnd().toString());
-        summary.put("reportType", report.getReportType().name());
-
-        var actionCounts = auditLogRepository.countByActionInDateRange(
-            report.getWorkspaceId(), report.getPeriodStart(), report.getPeriodEnd());
-
-        Map<String, Long> actionBreakdown = new HashMap<>();
-        for (Object[] row : actionCounts) {
-            actionBreakdown.put((String) row[0], (Long) row[1]);
-        }
-        summary.put("actionBreakdown", actionBreakdown);
-
-        return summary;
+        ReportGenerator generator = reportGeneratorFactory.getGenerator(report.getReportType());
+        ReportGenerator.ReportContext context = new ReportGenerator.ReportContext(
+            report.getWorkspaceId(),
+            report.getPeriodStart(),
+            report.getPeriodEnd(),
+            fromJson(report.getParameters(), Map.class)
+        );
+        return generator.generateData(context);
     }
 
     @Transactional(readOnly = true)

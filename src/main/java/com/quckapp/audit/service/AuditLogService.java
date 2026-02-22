@@ -16,6 +16,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quckapp.audit.exception.ResourceNotFoundException;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -107,12 +109,23 @@ public class AuditLogService {
     }
 
     @Transactional(readOnly = true)
+    public AuditLogResponse getAuditLogById(UUID id) {
+        AuditLog auditLog = auditLogRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Audit log not found"));
+        return mapToResponse(auditLog);
+    }
+
+    @Transactional(readOnly = true)
     public AuditStatistics getStatistics(UUID workspaceId, Instant startDate, Instant endDate) {
         if (startDate == null) startDate = Instant.now().minus(30, ChronoUnit.DAYS);
         if (endDate == null) endDate = Instant.now();
 
         long totalEvents = auditLogRepository.countByWorkspaceIdAndDateRange(workspaceId, startDate, endDate);
         List<Object[]> actionCounts = auditLogRepository.countByActionInDateRange(workspaceId, startDate, endDate);
+        List<Object[]> categoryCounts = auditLogRepository.countByCategoryInDateRange(workspaceId, startDate, endDate);
+        List<Object[]> severityCounts = auditLogRepository.countBySeverityInDateRange(workspaceId, startDate, endDate);
+        List<Object[]> topActors = auditLogRepository.findTopActorsInDateRange(workspaceId, startDate, endDate, PageRequest.of(0, 10));
+        List<Object[]> topResources = auditLogRepository.findTopResourcesInDateRange(workspaceId, startDate, endDate, PageRequest.of(0, 10));
 
         Map<String, Long> eventsByAction = actionCounts.stream()
             .collect(Collectors.toMap(
@@ -120,12 +133,46 @@ public class AuditLogService {
                 row -> (Long) row[1]
             ));
 
+        Map<String, Long> eventsByCategory = categoryCounts.stream()
+            .collect(Collectors.toMap(
+                row -> ((AuditLog.AuditCategory) row[0]).name(),
+                row -> (Long) row[1]
+            ));
+
+        Map<String, Long> eventsBySeverity = severityCounts.stream()
+            .collect(Collectors.toMap(
+                row -> ((AuditLog.AuditSeverity) row[0]).name(),
+                row -> (Long) row[1]
+            ));
+
+        List<TopActor> topActorList = topActors.stream()
+            .map(row -> TopActor.builder()
+                .actorId((UUID) row[0])
+                .actorEmail((String) row[1])
+                .actorName((String) row[2])
+                .eventCount((Long) row[3])
+                .build())
+            .toList();
+
+        List<TopResource> topResourceList = topResources.stream()
+            .map(row -> TopResource.builder()
+                .resourceType((String) row[0])
+                .resourceId((UUID) row[1])
+                .resourceName((String) row[2])
+                .eventCount((Long) row[3])
+                .build())
+            .toList();
+
         return AuditStatistics.builder()
             .workspaceId(workspaceId)
             .periodStart(startDate)
             .periodEnd(endDate)
             .totalEvents(totalEvents)
             .eventsByAction(eventsByAction)
+            .eventsByCategory(eventsByCategory)
+            .eventsBySeverity(eventsBySeverity)
+            .topActors(topActorList)
+            .topResources(topResourceList)
             .build();
     }
 

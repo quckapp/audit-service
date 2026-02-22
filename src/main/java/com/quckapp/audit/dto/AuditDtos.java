@@ -208,4 +208,27 @@ public class AuditDtos {
         private boolean first;
         private boolean last;
     }
+
+    // ===== Retention Execution DTOs =====
+
+    @Data @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class RetentionExecutionResult {
+        private int totalPoliciesExecuted;
+        private int successfulPolicies;
+        private int failedPolicies;
+        private List<PolicyExecutionDetail> details;
+        private Instant executedAt;
+    }
+
+    @Data @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class PolicyExecutionDetail {
+        private UUID policyId;
+        private String policyName;
+        private boolean success;
+        private int archivedCount;
+        private int deletedCount;
+        private int esCleanedCount;
+        private String errorMessage;
+        private Instant executedAt;
+    }
 }
