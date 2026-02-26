@@ -78,7 +78,7 @@ class ComplianceReportControllerTest {
     class RequestReportTests {
 
         @Test
-        @DisplayName("POST /api/audit/reports - should create report request")
+        @DisplayName("POST /api/v1/audit/reports - should create report request")
         void shouldRequestReport() throws Exception {
             CreateReportRequest request = CreateReportRequest.builder()
                 .workspaceId(workspaceId)
@@ -91,7 +91,7 @@ class ComplianceReportControllerTest {
             sampleReportResponse.setStatus(ComplianceReport.ReportStatus.PENDING);
             when(reportService.requestReport(any(), any())).thenReturn(sampleReportResponse);
 
-            mockMvc.perform(post("/api/audit/reports")
+            mockMvc.perform(post("/api/v1/audit/reports")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -106,7 +106,7 @@ class ComplianceReportControllerTest {
     class GetReportsTests {
 
         @Test
-        @DisplayName("GET /api/audit/reports/workspace/{workspaceId} - should get reports")
+        @DisplayName("GET /api/v1/audit/reports/workspace/{workspaceId} - should get reports")
         void shouldGetReportsByWorkspace() throws Exception {
             PagedResponse<ComplianceReportResponse> pagedResponse = PagedResponse.<ComplianceReportResponse>builder()
                 .content(List.of(sampleReportResponse))
@@ -121,19 +121,19 @@ class ComplianceReportControllerTest {
             when(reportService.getReportsByWorkspace(eq(workspaceId), anyInt(), anyInt()))
                 .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/audit/reports/workspace/{workspaceId}", workspaceId))
+            mockMvc.perform(get("/api/v1/audit/reports/workspace/{workspaceId}", workspaceId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.content", hasSize(1)));
         }
 
         @Test
-        @DisplayName("GET /api/audit/reports/{id} - should get report by id")
+        @DisplayName("GET /api/v1/audit/reports/{id} - should get report by id")
         void shouldGetReportById() throws Exception {
             UUID reportId = sampleReportResponse.getId();
             when(reportService.getReportById(reportId)).thenReturn(sampleReportResponse);
 
-            mockMvc.perform(get("/api/audit/reports/{id}", reportId))
+            mockMvc.perform(get("/api/v1/audit/reports/{id}", reportId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(reportId.toString()))
@@ -146,13 +146,13 @@ class ComplianceReportControllerTest {
     class DownloadReportTests {
 
         @Test
-        @DisplayName("GET /api/audit/reports/{id}/download - should return 404 when no file")
+        @DisplayName("GET /api/v1/audit/reports/{id}/download - should return 404 when no file")
         void shouldReturn404WhenNoFile() throws Exception {
             UUID reportId = sampleReportResponse.getId();
             sampleReportResponse.setFileUrl(null);
             when(reportService.getReportById(reportId)).thenReturn(sampleReportResponse);
 
-            mockMvc.perform(get("/api/audit/reports/{id}/download", reportId))
+            mockMvc.perform(get("/api/v1/audit/reports/{id}/download", reportId))
                 .andExpect(status().isNotFound());
         }
     }

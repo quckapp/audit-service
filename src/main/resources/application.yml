@@ -89,7 +89,7 @@ springdoc:
     persistAuthorization: true
     tryItOutEnabled: true
   packages-to-scan: com.quckapp.audit.controller
-  paths-to-match: /api/**
+  paths-to-match: /api/v1/**
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
 

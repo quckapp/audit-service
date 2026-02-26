@@ -200,7 +200,7 @@ class CsvExportServiceTest {
 
             ExportResult result = csvExportService.exportToCsv(logs, "URL Test", reportId);
 
-            assertThat(result.fileUrl()).isEqualTo("/api/audit/reports/" + reportId + "/download");
+            assertThat(result.fileUrl()).isEqualTo("/api/v1/audit/reports/" + reportId + "/download");
         }
 
         @Test

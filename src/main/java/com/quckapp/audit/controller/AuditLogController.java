@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/audit/logs")
+@RequestMapping("/api/v1/audit/logs")
 @RequiredArgsConstructor
 @Tag(name = "Audit Logs", description = "Audit log management APIs")
 public class AuditLogController {

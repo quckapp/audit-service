@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/audit")
+@RequestMapping("/api/v1/audit")
 @RequiredArgsConstructor
 @Tag(name = "Audit", description = "Audit logging and compliance APIs")
 public class AuditController {

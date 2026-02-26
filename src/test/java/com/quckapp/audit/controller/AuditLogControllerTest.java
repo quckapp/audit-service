@@ -82,7 +82,7 @@ class AuditLogControllerTest {
     class CreateAuditLogTests {
 
         @Test
-        @DisplayName("POST /api/audit/logs - should create audit log")
+        @DisplayName("POST /api/v1/audit/logs - should create audit log")
         void shouldCreateAuditLog() throws Exception {
             CreateAuditLogRequest request = CreateAuditLogRequest.builder()
                 .workspaceId(workspaceId)
@@ -97,7 +97,7 @@ class AuditLogControllerTest {
 
             when(auditLogService.createAuditLog(any())).thenReturn(sampleResponse);
 
-            mockMvc.perform(post("/api/audit/logs")
+            mockMvc.perform(post("/api/v1/audit/logs")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -114,7 +114,7 @@ class AuditLogControllerTest {
     class SearchAuditLogsTests {
 
         @Test
-        @DisplayName("POST /api/audit/logs/search - should search audit logs")
+        @DisplayName("POST /api/v1/audit/logs/search - should search audit logs")
         void shouldSearchAuditLogs() throws Exception {
             AuditLogSearchRequest request = AuditLogSearchRequest.builder()
                 .workspaceId(workspaceId)
@@ -134,7 +134,7 @@ class AuditLogControllerTest {
 
             when(auditLogService.searchAuditLogs(any())).thenReturn(pagedResponse);
 
-            mockMvc.perform(post("/api/audit/logs/search")
+            mockMvc.perform(post("/api/v1/audit/logs/search")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -149,25 +149,25 @@ class AuditLogControllerTest {
     class GetAuditLogByIdTests {
 
         @Test
-        @DisplayName("GET /api/audit/logs/{id} - should get audit log by id")
+        @DisplayName("GET /api/v1/audit/logs/{id} - should get audit log by id")
         void shouldGetAuditLogById() throws Exception {
             UUID logId = sampleResponse.getId();
             when(auditLogService.getAuditLogById(logId)).thenReturn(sampleResponse);
 
-            mockMvc.perform(get("/api/audit/logs/{id}", logId))
+            mockMvc.perform(get("/api/v1/audit/logs/{id}", logId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(logId.toString()));
         }
 
         @Test
-        @DisplayName("GET /api/audit/logs/{id} - should return 404 when not found")
+        @DisplayName("GET /api/v1/audit/logs/{id} - should return 404 when not found")
         void shouldReturn404WhenAuditLogNotFound() throws Exception {
             UUID logId = UUID.randomUUID();
             when(auditLogService.getAuditLogById(logId))
                 .thenThrow(new ResourceNotFoundException("Audit log not found"));
 
-            mockMvc.perform(get("/api/audit/logs/{id}", logId))
+            mockMvc.perform(get("/api/v1/audit/logs/{id}", logId))
                 .andExpect(status().isNotFound());
         }
     }
@@ -177,7 +177,7 @@ class AuditLogControllerTest {
     class GetAuditLogsByWorkspaceTests {
 
         @Test
-        @DisplayName("GET /api/audit/logs/workspace/{workspaceId} - should get logs by workspace")
+        @DisplayName("GET /api/v1/audit/logs/workspace/{workspaceId} - should get logs by workspace")
         void shouldGetAuditLogsByWorkspace() throws Exception {
             PagedResponse<AuditLogResponse> pagedResponse = PagedResponse.<AuditLogResponse>builder()
                 .content(List.of(sampleResponse))
@@ -191,7 +191,7 @@ class AuditLogControllerTest {
 
             when(auditLogService.searchAuditLogs(any())).thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/audit/logs/workspace/{workspaceId}", workspaceId)
+            mockMvc.perform(get("/api/v1/audit/logs/workspace/{workspaceId}", workspaceId)
                     .param("page", "0")
                     .param("size", "20"))
                 .andExpect(status().isOk())
@@ -205,7 +205,7 @@ class AuditLogControllerTest {
     class GetStatisticsTests {
 
         @Test
-        @DisplayName("GET /api/audit/logs/statistics/workspace/{workspaceId} - should get statistics")
+        @DisplayName("GET /api/v1/audit/logs/statistics/workspace/{workspaceId} - should get statistics")
         void shouldGetStatistics() throws Exception {
             AuditStatistics statistics = AuditStatistics.builder()
                 .workspaceId(workspaceId)
@@ -221,7 +221,7 @@ class AuditLogControllerTest {
 
             when(auditLogService.getStatistics(eq(workspaceId), any(), any())).thenReturn(statistics);
 
-            mockMvc.perform(get("/api/audit/logs/statistics/workspace/{workspaceId}", workspaceId))
+            mockMvc.perform(get("/api/v1/audit/logs/statistics/workspace/{workspaceId}", workspaceId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.totalEvents").value(100))

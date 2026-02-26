@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/audit/retention-policies")
+@RequestMapping("/api/v1/audit/retention-policies")
 @RequiredArgsConstructor
 @Tag(name = "Retention Policies", description = "Audit log retention policy management APIs")
 public class RetentionPolicyController {

@@ -72,7 +72,7 @@ class RetentionPolicyControllerTest {
     class CreatePolicyTests {
 
         @Test
-        @DisplayName("POST /api/audit/retention-policies - should create policy")
+        @DisplayName("POST /api/v1/audit/retention-policies - should create policy")
         void shouldCreateRetentionPolicy() throws Exception {
             CreateRetentionPolicyRequest request = CreateRetentionPolicyRequest.builder()
                 .workspaceId(workspaceId)
@@ -83,7 +83,7 @@ class RetentionPolicyControllerTest {
 
             when(retentionService.createPolicy(any())).thenReturn(samplePolicyResponse);
 
-            mockMvc.perform(post("/api/audit/retention-policies")
+            mockMvc.perform(post("/api/v1/audit/retention-policies")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -98,24 +98,24 @@ class RetentionPolicyControllerTest {
     class GetPoliciesTests {
 
         @Test
-        @DisplayName("GET /api/audit/retention-policies/workspace/{workspaceId} - should get policies")
+        @DisplayName("GET /api/v1/audit/retention-policies/workspace/{workspaceId} - should get policies")
         void shouldGetRetentionPolicies() throws Exception {
             when(retentionService.getPoliciesByWorkspace(workspaceId))
                 .thenReturn(List.of(samplePolicyResponse));
 
-            mockMvc.perform(get("/api/audit/retention-policies/workspace/{workspaceId}", workspaceId))
+            mockMvc.perform(get("/api/v1/audit/retention-policies/workspace/{workspaceId}", workspaceId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data", hasSize(1)));
         }
 
         @Test
-        @DisplayName("GET /api/audit/retention-policies/{id} - should get policy by id")
+        @DisplayName("GET /api/v1/audit/retention-policies/{id} - should get policy by id")
         void shouldGetRetentionPolicyById() throws Exception {
             UUID policyId = samplePolicyResponse.getId();
             when(retentionService.getPolicyById(policyId)).thenReturn(samplePolicyResponse);
 
-            mockMvc.perform(get("/api/audit/retention-policies/{id}", policyId))
+            mockMvc.perform(get("/api/v1/audit/retention-policies/{id}", policyId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(policyId.toString()));
@@ -127,7 +127,7 @@ class RetentionPolicyControllerTest {
     class UpdatePolicyTests {
 
         @Test
-        @DisplayName("PUT /api/audit/retention-policies/{id} - should update policy")
+        @DisplayName("PUT /api/v1/audit/retention-policies/{id} - should update policy")
         void shouldUpdateRetentionPolicy() throws Exception {
             UUID policyId = samplePolicyResponse.getId();
             UpdateRetentionPolicyRequest request = UpdateRetentionPolicyRequest.builder()
@@ -140,7 +140,7 @@ class RetentionPolicyControllerTest {
 
             when(retentionService.updatePolicy(eq(policyId), any())).thenReturn(samplePolicyResponse);
 
-            mockMvc.perform(put("/api/audit/retention-policies/{id}", policyId)
+            mockMvc.perform(put("/api/v1/audit/retention-policies/{id}", policyId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -154,11 +154,11 @@ class RetentionPolicyControllerTest {
     class DeletePolicyTests {
 
         @Test
-        @DisplayName("DELETE /api/audit/retention-policies/{id} - should delete policy")
+        @DisplayName("DELETE /api/v1/audit/retention-policies/{id} - should delete policy")
         void shouldDeleteRetentionPolicy() throws Exception {
             UUID policyId = UUID.randomUUID();
 
-            mockMvc.perform(delete("/api/audit/retention-policies/{id}", policyId))
+            mockMvc.perform(delete("/api/v1/audit/retention-policies/{id}", policyId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Retention policy deleted"));
@@ -172,7 +172,7 @@ class RetentionPolicyControllerTest {
     class ExecutePolicyTests {
 
         @Test
-        @DisplayName("POST /api/audit/retention-policies/execute - should execute all policies")
+        @DisplayName("POST /api/v1/audit/retention-policies/execute - should execute all policies")
         void shouldExecuteAllRetentionPolicies() throws Exception {
             RetentionExecutionResult result = RetentionExecutionResult.builder()
                 .totalPoliciesExecuted(2)
@@ -184,7 +184,7 @@ class RetentionPolicyControllerTest {
 
             when(retentionService.executeAllPolicies()).thenReturn(result);
 
-            mockMvc.perform(post("/api/audit/retention-policies/execute"))
+            mockMvc.perform(post("/api/v1/audit/retention-policies/execute"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.totalPoliciesExecuted").value(2))
@@ -192,7 +192,7 @@ class RetentionPolicyControllerTest {
         }
 
         @Test
-        @DisplayName("POST /api/audit/retention-policies/{id}/execute - should execute single policy")
+        @DisplayName("POST /api/v1/audit/retention-policies/{id}/execute - should execute single policy")
         void shouldExecuteSingleRetentionPolicy() throws Exception {
             UUID policyId = UUID.randomUUID();
             PolicyExecutionDetail detail = PolicyExecutionDetail.builder()
@@ -207,7 +207,7 @@ class RetentionPolicyControllerTest {
 
             when(retentionService.executePolicyById(policyId)).thenReturn(detail);
 
-            mockMvc.perform(post("/api/audit/retention-policies/{id}/execute", policyId))
+            mockMvc.perform(post("/api/v1/audit/retention-policies/{id}/execute", policyId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.success").value(true))

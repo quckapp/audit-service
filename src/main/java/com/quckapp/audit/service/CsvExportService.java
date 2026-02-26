@@ -77,7 +77,7 @@ public class CsvExportService {
         }
 
         long fileSize = Files.size(filePath);
-        String fileUrl = "/api/audit/reports/" + reportId + "/download";
+        String fileUrl = "/api/v1/audit/reports/" + reportId + "/download";
 
         log.info("Exported {} audit logs to CSV: {} ({} bytes)", auditLogs.size(), filename, fileSize);
 

@@ -20,7 +20,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/audit/reports")
+@RequestMapping("/api/v1/audit/reports")
 @RequiredArgsConstructor
 @Tag(name = "Compliance Reports", description = "Compliance report generation and download APIs")
 public class ComplianceReportController {
