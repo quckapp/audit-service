@@ -48,6 +48,10 @@ spring:
       auto-offset-reset: earliest
       enable-auto-commit: false
 
+promotion:
+  service-name: audit-service
+  environment: ${ENVIRONMENT:local}
+
 kafka:
   topics:
     audit-events: audit-events
